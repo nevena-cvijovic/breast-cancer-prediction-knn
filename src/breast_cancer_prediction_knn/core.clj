@@ -99,14 +99,49 @@
     (take-last n rows)))
 
 
-(println "Dataset Information:")
-(println (dataset-info cancer-data))
+;(println "Dataset Information:")
+;(println (dataset-info cancer-data))
+;
+;(println "\nColumn 'diagnosis':")
+;(println (get-column cancer-data "diagnosis"))
+;
+;(println "\nLast 5 rows of the dataset:")
+;(println (last-rows cancer-data 5))
 
-(println "\nColumn 'diagnosis':")
-(println (get-column cancer-data "diagnosis"))
 
-(println "\nLast 5 rows of the dataset:")
-(println (last-rows cancer-data 5))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;; DATA MANIPULATION
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(defn drop-column
+  "Drops a single column by column name"
+  [data column-name]
+  (let [headers (get-headers data) ;; Extract headers (first row)
+        column-index (.indexOf headers column-name) ;; Find the index of the specified column
+        ;; Filter out the specified column from each row
+        filtered-data (if (>= column-index 0) ;; Ensure column exists
+                        (mapv
+                          (fn [row]
+                            (vec (keep-indexed
+                                   (fn [i v]
+                                     (when (not= i column-index)
+                                       v))
+                                   row)))
+                          data)
+                        data)] ;; If column doesn't exist, return data unchanged
+    filtered-data))
+
+;Id column is not needed for prediction
+(def cleaned-data
+  (drop-column cancer-data "id"))
+
+(println "Cleaned data (column 'id' dropped):")
+(println cleaned-data)
+
+(println "Cleaned data (column 'id' dropped) first 10 rows:")
+(doseq [row (take 10 cleaned-data)]
+  (println row))
 
 
