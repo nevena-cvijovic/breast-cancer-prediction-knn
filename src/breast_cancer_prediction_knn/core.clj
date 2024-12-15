@@ -11,6 +11,7 @@
 ;;;;;; LOADING DATA
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
 (defn load-data
   "Function for loading data from csv file"
   [csv-file]
@@ -58,10 +59,10 @@
 (def cancer-data (convert-dataset "src/breast_cancer_prediction_knn/Cancerdata.csv"))
 ;(println cancer-data)
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;; PRINTING and PRESENTING DATA
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (doseq [row (take 10 cancer-data)]
   (println row))
 
@@ -109,10 +110,10 @@
 ;(println (last-rows cancer-data 5))
 
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;; DATA MANIPULATION
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 
 (defn drop-column
@@ -137,11 +138,64 @@
 (def cleaned-data
   (drop-column cancer-data "id"))
 
-(println "Cleaned data (column 'id' dropped):")
-(println cleaned-data)
+;(println "Cleaned data (column 'id' dropped):")
+;(println cleaned-data)
+;
+;(println "Cleaned data (column 'id' dropped) first 10 rows:")
+;(doseq [row (take 10 cleaned-data)]
+;  (println row))
 
-(println "Cleaned data (column 'id' dropped) first 10 rows:")
-(doseq [row (take 10 cleaned-data)]
-  (println row))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;; DIAGNOSIS CHANGE FROM M or B TO 1 or 0
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+(defn encode-diagnosis
+  "Converts M to 1 and B to 0 in the diagnosis column"
+  [data]
+  (let [headers (get-headers data)
+        column-index (.indexOf headers "diagnosis") ;; Find the diagnosis column index
+        ;; Transform diagnosis column values
+        transformed-data
+        (mapv
+          (fn [row]
+            (if (= row headers)
+              row ;; Keep headers unchanged
+              (assoc row column-index
+                         (if (= (nth row column-index) "M") "1" "0"))))
+          data)]
+    transformed-data))
+
+
+(defn extract-y
+  "Extract the target variable (y) as the encoded diagnosis column"
+  [data]
+  (map #(nth % (.indexOf (get-headers data) "diagnosis")) (rest data))) ;; Exclude headers
+
+
+(defn drop-diagnosis-column
+  "Remove the diagnosis column to create x_data"
+  [data]
+  (drop-column data "diagnosis"))
+
+
+(def encoded-data (encode-diagnosis cleaned-data)) ;; Encodes "diagnosis" column
+
+;; Encoded diagnosis data = y-data. Stores results of diagnosis (0 and 1)
+(def y-data (extract-y encoded-data)) ;; Extracts encoded "diagnosis" column as y
+(def x-data (drop-diagnosis-column encoded-data)) ;; Drops "diagnosis" column for x_data
+
+
+(println "Encoded Data:")
+(doseq [row (take 10 encoded-data)] (println row))
+
+(println "\nY Data:")
+(println y-data)
+
+(println "\nX Data:")
+(doseq [row (take 10 x-data)] (println row))
+
 
 
