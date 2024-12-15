@@ -56,4 +56,57 @@
   (map (fn [x] (parse-row x)) (load-data dataset-url)))
 
 (def cancer-data (convert-dataset "src/breast_cancer_prediction_knn/Cancerdata.csv"))
-(println cancer-data)
+;(println cancer-data)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;; PRINTING and PRESENTING DATA
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(doseq [row (take 10 cancer-data)]
+  (println row))
+
+(defn get-headers
+  "Get column names (header)"
+  [data]
+  (first data))
+
+
+(defn get-column
+  "Extract a specific column by its name"
+  [data column-name]
+  (let [headers (get-headers data)
+        column-index (.indexOf headers column-name)]
+    (if (>= column-index 0)
+      (map #(nth % column-index nil) (rest data))
+      (println (str "Column " column-name " not found!")))))
+
+
+(defn dataset-info
+  "Get general information about the dataset"
+  [data]
+  (let [headers (get-headers data)
+        num-rows (count (rest data)) ;; Exclude header
+        num-cols (count headers)]
+    {:num-rows num-rows
+     :num-cols num-cols
+     :columns headers}))
+
+
+(defn last-rows
+  "Get the last N rows of dataset"
+  [data n]
+  (let [rows (rest data)] ;; Exclude header
+    (take-last n rows)))
+
+
+(println "Dataset Information:")
+(println (dataset-info cancer-data))
+
+(println "\nColumn 'diagnosis':")
+(println (get-column cancer-data "diagnosis"))
+
+(println "\nLast 5 rows of the dataset:")
+(println (last-rows cancer-data 5))
+
+
+
