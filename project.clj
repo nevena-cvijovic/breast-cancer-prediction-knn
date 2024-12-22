@@ -7,7 +7,10 @@
                  [org.clojure/data.csv "1.1.0"]
 
 
+
+
                  ]
   :repositories [["clojars" "https://clojars.org/repo/"]
+                 ["central" "https://repo1.maven.org/maven2/"]
                  ]
   :repl-options {:init-ns breast-cancer-prediction-knn.core})

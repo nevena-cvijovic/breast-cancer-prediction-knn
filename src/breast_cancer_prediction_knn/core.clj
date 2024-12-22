@@ -1,5 +1,6 @@
 (ns breast-cancer-prediction-knn.core
-  (:import [java.lang Integer])
+  (:import [java.lang Integer]
+           )
   (:require [clojure.data.csv :as csv]
             [clojure.java.io :as io]
 
@@ -199,10 +200,10 @@
 
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;; DATA NORMALIZATION
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; DATA NORMALIZATION
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn normalize-data
   "Normalizes the data (excluding headers)."
@@ -230,7 +231,33 @@
     (cons headers normalized-rows)))
 
 
-(def normalized-x-data (normalize-data x-data))
+(def normalized-data (normalize-data encoded-data))
 
 (println "Normalized X Data:")
-(doseq [row (take 10 normalized-x-data)] (println row))
+(doseq [row (take 10 normalized-data)] (println row))
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;; TRAIN AND TEST DATA
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+(defn train-test-split [data p]
+  (let [n (count data)
+        size (int (* n p))
+        shuffled-data (shuffle data)]
+    {:train (subvec shuffled-data 0 size)
+     :test (subvec shuffled-data size n)}))
+
+(def split-data
+  (train-test-split (rest normalized-data) 0.7))
+
+
+(println "Train data:" (:train split-data))
+(println "Test data: " (:test split-data))
+
+
