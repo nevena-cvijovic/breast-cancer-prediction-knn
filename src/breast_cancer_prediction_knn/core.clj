@@ -261,3 +261,33 @@
 (println "Test data: " (:test split-data))
 
 
+
+
+(defn transform-data [data]
+  (mapv (fn [sample]
+          (let [attributes (map #(Double/parseDouble (str %)) (subvec sample 1 31))
+                cancer-type (if (= (nth sample 0) "1") :M :B)]
+            {:attributes attributes
+             :cancer-type cancer-type}))
+        data))
+
+(def transformed-train-data (transform-data (:train split-data)))
+(def transformed-test-data (transform-data (:test split-data)))
+
+(println transformed-train-data)
+
+(println transformed-test-data)
+
+
+
+
+(defn transform-data-without-class [data]
+  (mapv (fn [sample]
+          {:attributes (map #(Double/parseDouble (str %)) (:attributes sample))})
+        data))
+(def transformed-test-data-without-class
+  (transform-data-without-class transformed-test-data))
+
+(println transformed-test-data-without-class)
+
+
