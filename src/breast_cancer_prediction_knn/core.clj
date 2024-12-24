@@ -291,3 +291,38 @@
 (println transformed-test-data-without-class)
 
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;; KNN
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn euclidean-distance [first-vector second-vector]
+  (Math/sqrt (reduce + (map #(* % %) (map - first-vector second-vector)))))
+
+(defn nearest-neighbors [train-data new-data k]
+  (take k
+        (sort-by :distance
+                 (map #(assoc % :distance (euclidean-distance (:attributes %) new-data)) train-data))))
+
+
+(defn knn [train-data new-data k]
+  (let [nearest-neighbors (nearest-neighbors train-data new-data k)
+        classes (map :cancer-type nearest-neighbors)
+        frequencies (frequencies classes)]
+    (first (first (sort-by val > frequencies)))))
+
+(def train-data transformed-train-data)
+(println train-data)
+(def test-data transformed-test-data-without-class)
+
+(doseq [cancer-patient test-data]
+  (let [k 3
+        predicted-class (knn train-data (:attributes cancer-patient) k)]
+    (println "Cancer patient characteristics:")
+    (println cancer-patient)
+    (println "----------------------------------------------")
+    (println "Prediction:")
+    (if (= predicted-class :M)
+      (println "Cancer type is Malignant.")
+      (println "Cancer type is Benign."))
+    (println "----------------------------------------------")))
