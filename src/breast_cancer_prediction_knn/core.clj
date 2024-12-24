@@ -3,7 +3,7 @@
            )
   (:require [clojure.data.csv :as csv]
             [clojure.java.io :as io]
-
+            [breast-cancer-prediction-knn.evaluation-metrics :as eval-met]
 
             ))
 
@@ -335,3 +335,9 @@
   (map #(knn train-data (:attributes %) 3) test-data))
 
 (println predicted-data)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;; Evaluation of predicted and actual results
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(eval-met/calculate-measures actual-data predicted-data)
