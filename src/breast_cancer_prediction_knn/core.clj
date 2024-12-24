@@ -326,3 +326,12 @@
       (println "Cancer type is Malignant.")
       (println "Cancer type is Benign."))
     (println "----------------------------------------------")))
+
+(def actual-data (map :cancer-type transformed-test-data))
+
+(println actual-data)
+
+(def predicted-data
+  (map #(knn train-data (:attributes %) 3) test-data))
+
+(println predicted-data)
