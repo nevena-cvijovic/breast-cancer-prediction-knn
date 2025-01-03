@@ -5,12 +5,8 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/data.csv "1.1.0"]
-
-
-
-
-                 ]
+                 [midje "1.10.9"]]
+  :plugins [[lein-midje "3.2.1"]]
   :repositories [["clojars" "https://clojars.org/repo/"]
-                 ["central" "https://repo1.maven.org/maven2/"]
-                 ]
+                 ["central" "https://repo1.maven.org/maven2/"]]
   :repl-options {:init-ns breast-cancer-prediction-knn.core})

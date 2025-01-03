@@ -23,4 +23,5 @@
   (let [nearest-neighbors (nearest-neighbors train-data new-data k)
         classes (map :cancer-type nearest-neighbors)
         frequencies (frequencies classes)]
-    (first (first (sort-by val > frequencies)))))
+    ;; Sort the frequencies map by values (the counts) and get the class with the highest count
+    (key (first (sort-by (fn [[_ v]] v) > frequencies)))))
