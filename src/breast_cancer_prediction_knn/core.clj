@@ -135,4 +135,12 @@
 ;;;;;;; Evaluation of predicted and actual results
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(eval-met/calculate-measures actual-data predicted-data)
+(def evaluation-metrics (eval-met/calculate-measures actual-data predicted-data)) (eval-met/calculate-measures actual-data predicted-data)
+(println "#################################")
+(println "Evaluation metrics")
+(println "#################################")
+(println "Accuracy: " (get evaluation-metrics :accuracy)
+         "\nPrecision: " (get evaluation-metrics :precision)
+         "\nRecall: " (get evaluation-metrics :recall)
+         "\nF1: " (get evaluation-metrics :f1))
+

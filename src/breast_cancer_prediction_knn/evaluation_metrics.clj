@@ -16,7 +16,10 @@
 
 
 
-(defn calculate-measures [actual predicted]
+
+(defn calculate-measures
+  "Calculates accuracy, precision, recall, and F1 score based on actual and predicted values."
+  [actual predicted]
   (let [fp (false-positive actual predicted)
         tp (true-positive actual predicted)
         fn (false-negative actual predicted)
@@ -25,7 +28,7 @@
           precision (double (if (zero? (+ tp fp)) 0 (/ tp (+ tp fp))))
           recall (double (if (zero? (+ tp fn)) 0 (/ tp (+ tp fn))))
           f1 (double (* 2 (/ (* precision recall) (+ precision recall))))]
-      (println "Accuracy:" accuracy)
-      (println "Precision:" precision)
-      (println "Recall:" recall)
-      (println "F1:" f1))))
+      {:accuracy accuracy
+       :precision precision
+       :recall recall
+       :f1 f1})))
