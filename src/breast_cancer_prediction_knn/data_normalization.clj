@@ -3,7 +3,7 @@
   (:require [breast-cancer-prediction-knn.data-manipulation :as data-man]))
 
 (defn normalize-data
-  "Normalizes the data (excluding headers)."
+  "Normalizes the data (excluding header)."
   [data]
 
   (let [headers (data-man/get-headers data)
