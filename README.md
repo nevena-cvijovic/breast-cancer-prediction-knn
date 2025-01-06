@@ -377,6 +377,12 @@ the Midje library (https://github.com/marick/Midje).
 In the __test folder__ there are files organized in the same way as the __src folder__.
 These folder contains 62 tests that cover cases of function calls.
 
+You can start the test by entering following command in terminal:
+
+```
+lein midje
+```
+
 ## Conclusion
 
 The KNN algorithm produced excellent results for this dataset, as evidenced by the calculated performance metrics:
