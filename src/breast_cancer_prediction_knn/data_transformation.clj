@@ -23,7 +23,7 @@
 
   (map parse-value row))
 (defn convert-dataset
-  "Converts value of each observation in dataset to true data type and returns converted dataset"
-  [dataset-url]
+  "Converts the value of each observation in the dataset to the true data type and returns the converted dataset"
+  [csv-file]
 
-  (map (fn [x] (parse-row x)) (load-data/load-data dataset-url)))
+  (map (fn [x] (parse-row x)) (load-data/load-data csv-file)))
