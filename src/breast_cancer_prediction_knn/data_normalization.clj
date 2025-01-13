@@ -26,4 +26,5 @@
         ;; Transpose normalized columns back into rows
         normalized-rows (apply map vector normalized-columns)]
     ;; Add headers back to the normalized data
-    (cons headers normalized-rows)))
+    (cons headers normalized-rows)
+    ))

@@ -15,7 +15,8 @@
         column-index (.indexOf headers column-name)]
     (if (>= column-index 0)
       (map #(nth % column-index nil) (rest data))
-      (println (str "Column " column-name " not found!")))))
+      (println (str "Column " column-name " not found!")))
+    ))
 
 
 (defn dataset-info
@@ -27,7 +28,8 @@
         num-cols (count headers)]
     {:num-rows num-rows
      :num-cols num-cols
-     :columns headers}))
+     :columns headers}
+    ))
 
 
 (defn last-rows
@@ -35,7 +37,9 @@
   [data n]
 
   (let [rows (rest data)] ;; Exclude header
-    (take-last n rows)))
+    (take-last n rows)
+    ))
+
 
 (defn drop-column
   "Drops a single column by column name"

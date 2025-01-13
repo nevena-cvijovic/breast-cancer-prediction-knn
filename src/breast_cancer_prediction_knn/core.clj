@@ -27,7 +27,8 @@
 
 ;(println cancer-data)
 (doseq [row (take 10 cancer-data)]
-  (println row))
+  (println row)
+  )
 
 (println "Dataset Information:")
 (println (data-man/dataset-info cancer-data))
@@ -44,15 +45,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;Id column is not needed for prediction
-(def cleaned-data
-  (data-man/drop-column cancer-data "id"))
+(def cleaned-data (data-man/drop-column cancer-data "id"))
 
 (println "Cleaned data (column 'id' dropped):")
 (println cleaned-data)
 
 (println "Cleaned data (column 'id' dropped) first 10 rows:")
 (doseq [row (take 10 cleaned-data)]
-  (println row))
+  (println row)
+  )
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -64,7 +65,8 @@
 
 (println "Encoded Data:")
 (doseq [row (take 10 encoded-data)]
-  (println row))
+  (println row)
+  )
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -74,7 +76,9 @@
 (def normalized-data (data-norm/normalize-data encoded-data))
 
 (println "Normalized data:")
-(doseq [row (take 10 normalized-data)] (println row))
+(doseq [row (take 10 normalized-data)]
+  (println row)
+  )
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -118,7 +122,9 @@
     (if (= predicted-class :M)
       (println "Cancer type is Malignant.")
       (println "Cancer type is Benign."))
-    (println "#################################")))
+    (println "#################################")
+    )
+  )
 
 (def actual-data (map :cancer-type transformed-test-data))
 

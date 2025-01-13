@@ -15,15 +15,19 @@
         true
         (if (= "No" number_value)
           false
-          number_value)))))
+          number_value)))
+    ))
 
 (defn parse-row
   "Parsing each element of row to belonging type"
   [row]
 
-  (map parse-value row))
+  (map parse-value row)
+  )
+
 (defn convert-dataset
   "Converts the value of each observation in the dataset to the true data type and returns the converted dataset"
   [csv-file]
 
-  (map (fn [x] (parse-row x)) (load-data/load-data csv-file)))
+  (map (fn [x] (parse-row x)) (load-data/load-data csv-file))
+  )

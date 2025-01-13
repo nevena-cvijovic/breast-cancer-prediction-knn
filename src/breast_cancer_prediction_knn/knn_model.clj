@@ -5,7 +5,8 @@
   "Calculates the Euclidean distance between two vectors"
   [first-vector second-vector]
 
-  (Math/sqrt (reduce + (map #(* % %) (map - first-vector second-vector)))))
+  (Math/sqrt (reduce + (map #(* % %) (map - first-vector second-vector))))
+  )
 
 (defn nearest-neighbors
   "Finds k nearest neighbours"
@@ -13,7 +14,8 @@
 
   (take k
         (sort-by :distance
-                 (map #(assoc % :distance (euclidean-distance (:attributes %) new-data)) train-data))))
+                 (map #(assoc % :distance (euclidean-distance (:attributes %) new-data)) train-data)))
+  )
 
 
 (defn knn
@@ -24,4 +26,5 @@
         classes (map :cancer-type nearest-neighbors)
         frequencies (frequencies classes)]
     ;; Sort the frequencies map by values (the counts) and get the class with the highest count
-    (key (first (sort-by (fn [[_ v]] v) > frequencies)))))
+    (key (first (sort-by (fn [[_ v]] v) > frequencies)))
+    ))

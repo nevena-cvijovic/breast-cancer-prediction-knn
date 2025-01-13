@@ -2,17 +2,33 @@
 
 
 
-(defn true-positive [actual-values predicted-values]
-  (count (filter (fn [[actual predicted]] (and (= actual :B) (= predicted :B))) (map vector actual-values predicted-values))))
+(defn true-positive
+  "Calculates how many Benign predicted diagnosis are also Benign actual diagnosis"
+  [actual-values predicted-values]
 
-(defn true-negative [actual-values predicted-values]
-  (count (filter (fn [[actual predicted]] (and (= actual :M) (= predicted :M))) (map vector actual-values predicted-values))))
+  (count (filter (fn [[actual predicted]] (and (= actual :B) (= predicted :B))) (map vector actual-values predicted-values)))
+  )
 
-(defn false-positive [actual-values predicted-values]
-  (count (filter (fn [[actual predicted]] (and (= actual :M) (= predicted :B))) (map vector actual-values predicted-values))))
+(defn true-negative
+  "Calculates how many Malignant predicted diagnosis are also Malignant actual diagnosis"
+  [actual-values predicted-values]
 
-(defn false-negative [actual-values predicted-values]
-  (count (filter (fn [[actual predicted]] (and (= actual :B) (= predicted :M))) (map vector actual-values predicted-values))))
+  (count (filter (fn [[actual predicted]] (and (= actual :M) (= predicted :M))) (map vector actual-values predicted-values)))
+  )
+
+(defn false-positive
+  "Calculates how many Benign predicted diagnosis are Malignant actual diagnosis"
+  [actual-values predicted-values]
+
+  (count (filter (fn [[actual predicted]] (and (= actual :M) (= predicted :B))) (map vector actual-values predicted-values)))
+  )
+
+(defn false-negative
+  "Calculates how many Malignant predicted diagnosis are Benign actual diagnosis"
+  [actual-values predicted-values]
+
+  (count (filter (fn [[actual predicted]] (and (= actual :B) (= predicted :M))) (map vector actual-values predicted-values)))
+  )
 
 
 
@@ -20,6 +36,7 @@
 (defn calculate-measures
   "Calculates accuracy, precision, recall, and F1 score based on actual and predicted values."
   [actual predicted]
+
   (let [fp (false-positive actual predicted)
         tp (true-positive actual predicted)
         fn (false-negative actual predicted)
@@ -31,4 +48,5 @@
       {:accuracy accuracy
        :precision precision
        :recall recall
-       :f1 f1})))
+       :f1 f1})
+    ))

@@ -9,7 +9,8 @@
         size (int (* n p))
         shuffled-data (shuffle data)]
     {:train (subvec shuffled-data 0 size)
-     :test (subvec shuffled-data size n)}))
+     :test (subvec shuffled-data size n)}
+    ))
 
 (defn transform-data
   "Transforms dataset into a structured format - attributes and cancer type (diagnosis column of dataset)"
@@ -20,7 +21,8 @@
                 cancer-type (if (= (nth sample 0) "1") :M :B)]
             {:attributes attributes
              :cancer-type cancer-type}))
-        data))
+        data)
+  )
 
 (defn transform-data-without-class
   "Extracting only attributes from structured dataset"
@@ -28,4 +30,5 @@
 
   (mapv (fn [sample]
           {:attributes (map #(Double/parseDouble (str %)) (:attributes sample))})
-        data))
+        data)
+  )

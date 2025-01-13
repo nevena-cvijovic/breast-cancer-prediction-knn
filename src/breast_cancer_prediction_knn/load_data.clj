@@ -9,5 +9,4 @@
   (with-open [reader (io/reader csv-file)]
     (->> (csv/read-csv reader)
          (mapv vec))
-    )
-  )
+    ))
