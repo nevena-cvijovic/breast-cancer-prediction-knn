@@ -1,6 +1,7 @@
 # breast-cancer-prediction-knn
 
 __*Breast cancer prediction KNN*__ is a Clojure programming language project developed to give predictions of breast cancer type that patients, diagnosed with cancer, have.
+Breast cancer is a condition where abnormal breast cells multiply uncontrollably, forming tumors. If not treated, these tumors can spread to other parts of the body and become life-threatening.
 This tool aims to help doctors organizing breast cancer surgeries and radiation treatments based on whether the cancer type is benign or malignant.
 Doctors will be able to make decisions - patients with cancer types that are malignant should be given higher priority for surgery in order to save their lives.
 
@@ -46,6 +47,9 @@ All business logic is organized through following files:
 
 ## Project usage
 
+To run the project and see the final prediction results, go to __*core.clj*__ file and run *REPL* from there.
+
+### Code explanation
 In order to use the KNN algorithm and predict the type of breast cancer,
 it is necessary to first load the csv file containing the data that KNN model will work with:
 ```clojure
@@ -79,7 +83,7 @@ For purposes to presenting and printing data in console some functions are also 
 (println (data-man/last-rows cancer-data 5))
 ```
 These functions are stored in __data_manipulation.clj__ file.
-Now we can see general information about the dataset - number of columns, number of rows and header.
+Now we can see general information about the dataset - number of columns, number of rows and header (names of columns).
 Also, we can print a particular column that we are interested in.
 
 For prediction, we need only columns that are predictors.
@@ -332,33 +336,46 @@ we will use evaluation metrics that will calculate how much data is well predict
 Function calculate-measures is stored in __evaluation_metrics.clj__ file:
 
 ```clojure
-(defn true-positive [actual-values predicted-values]
- (count (filter (fn [[actual predicted]] (and (= actual :B) (= predicted :B))) (map vector actual-values predicted-values))))
+(defn true-positive
+  "Calculates how many Benign predicted diagnosis are also Benign actual diagnosis"
+  [actual-values predicted-values]
 
-(defn true-negative [actual-values predicted-values]
- (count (filter (fn [[actual predicted]] (and (= actual :M) (= predicted :M))) (map vector actual-values predicted-values))))
+  (count (filter (fn [[actual predicted]] (and (= actual :B) (= predicted :B))) (map vector actual-values predicted-values))))
 
-(defn false-positive [actual-values predicted-values]
- (count (filter (fn [[actual predicted]] (and (= actual :M) (= predicted :B))) (map vector actual-values predicted-values))))
+(defn true-negative
+  "Calculates how many Malignant predicted diagnosis are also Malignant actual diagnosis"
+  [actual-values predicted-values]
 
-(defn false-negative [actual-values predicted-values]
- (count (filter (fn [[actual predicted]] (and (= actual :B) (= predicted :M))) (map vector actual-values predicted-values))))
+  (count (filter (fn [[actual predicted]] (and (= actual :M) (= predicted :M))) (map vector actual-values predicted-values))))
+
+(defn false-positive
+  "Calculates how many Benign predicted diagnosis are Malignant actual diagnosis"
+  [actual-values predicted-values]
+
+  (count (filter (fn [[actual predicted]] (and (= actual :M) (= predicted :B))) (map vector actual-values predicted-values))))
+
+(defn false-negative
+  "Calculates how many Malignant predicted diagnosis are Benign actual diagnosis"
+  [actual-values predicted-values]
+
+  (count (filter (fn [[actual predicted]] (and (= actual :B) (= predicted :M))) (map vector actual-values predicted-values))))
 
 (defn calculate-measures
- "Calculates accuracy, precision, recall, and F1 score based on actual and predicted values."
- [actual predicted]
- (let [fp (false-positive actual predicted)
-       tp (true-positive actual predicted)
-       fn (false-negative actual predicted)
-       tn (true-negative actual predicted)]
-   (let [accuracy (double (/ (+ tp tn) (+ tp tn fp fn)))
-         precision (double (if (zero? (+ tp fp)) 0 (/ tp (+ tp fp))))
-         recall (double (if (zero? (+ tp fn)) 0 (/ tp (+ tp fn))))
-         f1 (double (* 2 (/ (* precision recall) (+ precision recall))))]
-     {:accuracy accuracy
-      :precision precision
-      :recall recall
-      :f1 f1})))
+  "Calculates accuracy, precision, recall, and F1 score based on actual and predicted values."
+  [actual predicted]
+
+  (let [fp (false-positive actual predicted)
+        tp (true-positive actual predicted)
+        fn (false-negative actual predicted)
+        tn (true-negative actual predicted)]
+    (let [accuracy (double (/ (+ tp tn) (+ tp tn fp fn)))
+          precision (double (if (zero? (+ tp fp)) 0 (/ tp (+ tp fp))))
+          recall (double (if (zero? (+ tp fn)) 0 (/ tp (+ tp fn))))
+          f1 (double (* 2 (/ (* precision recall) (+ precision recall))))]
+      {:accuracy accuracy
+       :precision precision
+       :recall recall
+       :f1 f1})))
 ```
 
 In this call of function we had the following results:
