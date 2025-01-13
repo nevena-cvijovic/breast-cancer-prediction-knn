@@ -71,6 +71,7 @@
 (def train-data2 (transform-data (:train dataset)))
 (def test-data2 (transform-data (:test dataset)))
 (def transformed-test-data-without-class (transform-data-without-class test-data2))
-(fact (seq? (map #(knn train-data2 (:attributes %) 3) transformed-test-data-without-class)) => true)
+(fact "Test with data from csv file"
+      (seq? (map #(knn train-data2 (:attributes %) 3) transformed-test-data-without-class)) => true)
 
 

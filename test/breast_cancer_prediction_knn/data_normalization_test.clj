@@ -8,6 +8,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; normalize-data tests
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(fact (seq? (normalize-data (load-data "src/breast_cancer_prediction_knn/Cancerdata.csv") )) => true)
-(fact (normalize-data (load-data "")) => (throws FileNotFoundException))
-(fact (normalize-data (load-data nil)) => (throws IllegalArgumentException))
+(fact "Returns normalized data (values between [0,1])"
+      (seq? (normalize-data (load-data "src/breast_cancer_prediction_knn/Cancerdata.csv") )) => true
+      )
+(fact "Throws FileNotFoundException if input is wrong"
+      (normalize-data (load-data "")) => (throws FileNotFoundException)
+      )
+(fact "Throws IllegalArgumentException if there is no input"
+      (normalize-data (load-data nil)) => (throws IllegalArgumentException)
+      )

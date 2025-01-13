@@ -7,17 +7,36 @@
 ;;;;; parse-value tests
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(fact (number? (parse-value "1")) => true)
-(fact (number? (parse-value "1.2")) => true)
-(fact (boolean? (parse-value "Yes")) => true)
-(fact (boolean? (parse-value "No")) => true)
-(fact (string? (parse-value "something")) => true)
-(fact (parse-value nil) => (throws NullPointerException))
+(fact "Test for integer number"
+      (number? (parse-value "7")) => true
+      )
+(fact "Test for real number"
+      (number? (parse-value "7.5")) => true
+      )
+(fact "Test for string"
+      (string? (parse-value "some string")) => true
+      )
+(fact "Test for boolean if it is true/yes"
+      (boolean? (parse-value "Yes")) => true
+      )
+(fact "Test for boolean if it is false/no"
+      (boolean? (parse-value "No")) => true
+      )
+
+(fact "Throws NullPointerException if there is no input"
+      (parse-value nil) => (throws NullPointerException)
+      )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; convert-dataset tests
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(fact (seq? (convert-dataset "src/breast_cancer_prediction_knn/Cancerdata.csv")) => true)
-(fact (seq? (convert-dataset "")) => (throws FileNotFoundException))
-(fact (seq? (convert-dataset nil)) => (throws IllegalArgumentException))
+(fact "Returns dataset with the true data type for each column"
+      (seq? (convert-dataset "src/breast_cancer_prediction_knn/Cancerdata.csv")) => true
+      )
+(fact "Throws FileNotFoundException if input is wrong"
+      (seq? (convert-dataset "")) => (throws FileNotFoundException)
+      )
+(fact "Throws IllegalArgumentException if there is no input"
+      (seq? (convert-dataset nil)) => (throws IllegalArgumentException)
+      )

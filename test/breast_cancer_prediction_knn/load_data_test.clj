@@ -3,9 +3,18 @@
   (:require [breast-cancer-prediction-knn.load-data :refer [load-data]])
   (:import (java.io FileNotFoundException)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; load-data tests
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(fact "return vector of vectors" (vector? (load-data "src/breast_cancer_prediction_knn/Cancerdata.csv")) => true)
+(fact "Returns vector of vectors"
+      (vector? (load-data "src/breast_cancer_prediction_knn/Cancerdata.csv")) => true
+      )
 
-(fact "fail if wrong input" (vector? (load-data "")) => (throws FileNotFoundException))
+(fact "Throws FileNotFoundException if input is wrong"
+      (vector? (load-data "")) => (throws FileNotFoundException)
+      )
 
-(fact "NullPointerException if no input is set" (vector? (load-data nil)) => (throws IllegalArgumentException))
+(fact "Throws IllegalArgumentException if there is no input"
+      (vector? (load-data nil)) => (throws IllegalArgumentException)
+      )

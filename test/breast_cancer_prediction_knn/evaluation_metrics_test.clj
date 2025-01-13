@@ -4,23 +4,29 @@
 
 
 (def actual [:M :B :B :B :M :M :M :B :M :B :B :B :M :M :M :B :B :M :B :B :B :M :M :B :M :B :B :M :B :B :M :B :M :B :M :B :B :B :B :B :B :B :B :B :B :B :M :B :M :B :B :B :B :B :B :B :B :B :B :M
-             :B :M :B :M :B :B :M :B :B :B :B :B :B :M :B :M :M :M :B :M :B :B :B :M :B :M :M :B :B :M :M :B :B :B :B :B :M :B :M :M :B :B :M :M :B :B :B :M :M :M :B :B :M :M :B :M :M :B :M :M :B :B :B :B :B :B :B :B :M :M :B :M :B :B :B :M :M :B :B :B :B :B :B :M :B :B :B :M :M :B :M :M :B :B :B :B :B :B :M :M :B :B :B :B :B :B :B :B :B :M :B])
+             :B :M :B :M :B :B :M :B :B :B :B :B :B :M :B :M :M :M :B :M :B :B :B :M :B :M :M :B :B :M :M :B :B :B :B :B :M :B :M :M :B :B :M :M :B :B :B :M :M :M :B :B :M :M :B :M :M :B :M :M
+             :B :B :B :B :B :B :B :B :M :M :B :M :B :B :B :M :M :B :B :B :B :B :B :M :B :B :B :M :M :B :M :M :B :B :B :B :B :B :M :M :B :B :B :B :B :B :B :B :B :M :B])
 (def predicted [:M :B :B :B :M :M :M :B :M :B :B :B :M :M :M :B :B :M :B :B :B :M :M :B :M :B :B :M :B :B :M :B :M :B :M :B :B :B :B :B :B :B :B :B :B :B :M :B :M :B :B :B :B :B :B :B :B :B :B :M
-                :B :M :B :M :B :B :M :B :B :B :B :B :B :M :B :M :B :M :B :M :B :B :B :M :B :M :M :B :B :M :M :B :B :B :B :B :M :B :M :M :B :B :M :M :B :B :B :M :M :M :B :B :M :M :B :B :M :B :M :M :B :B :B :B :B :B :B :B :M :M :B :M :B :B :B :M :M :B :B :B :B :B :B :M :B :B :B :M :M :B :M :M :B :B :M :B :B :B :M :M :B :B :B :B :B :B :B :B :B :M :B])
+                :B :M :B :M :B :B :M :B :B :B :B :B :B :M :B :M :B :M :B :M :B :B :B :M :B :M :M :B :B :M :M :B :B :B :B :B :M :B :M :M :B :B :M :M :B :B :B :M :M :M :B :B :M :M :B :B :M :B :M :M
+                :B :B :B :B :B :B :B :B :M :M :B :M :B :B :B :M :M :B :B :B :B :B :B :M :B :B :B :M :M :B :M :M :B :B :M :B :B :B :M :M :B :B :B :B :B :B :B :B :B :M :B])
 
 
 
 (fact "True positives are counted correctly"
-      (true-positive actual predicted) => 111)
+      (true-positive actual predicted) => 111
+      )
 
 (fact "True negatives are counted correctly"
-      (true-negative actual predicted) => 57)
+      (true-negative actual predicted) => 57
+      )
 
 (fact "False positives are counted correctly"
-      (false-positive actual predicted) => 2)
+      (false-positive actual predicted) => 2
+      )
 
 (fact "False negatives are counted correctly"
-      (false-negative actual predicted) => 1)
+      (false-negative actual predicted) => 1
+      )
 
 
 
@@ -29,4 +35,5 @@
       {:accuracy 0.9824561403508772
        :precision 0.9823008849557522
        :recall 0.9910714285714286
-       :f1 0.9866666666666667})
+       :f1 0.9866666666666667}
+      )
