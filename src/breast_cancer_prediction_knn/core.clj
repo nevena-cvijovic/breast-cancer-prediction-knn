@@ -1,14 +1,11 @@
 (ns breast-cancer-prediction-knn.core
-
   (:require
-            [breast-cancer-prediction-knn.data-transformation :as load-data]
-            [breast-cancer-prediction-knn.data-manipulation :as data-man]
-            [breast-cancer-prediction-knn.data-normalization :as data-norm]
-            [breast-cancer-prediction-knn.train-and-test-split :as tts]
-            [breast-cancer-prediction-knn.knn-model :as knn]
-            [breast-cancer-prediction-knn.evaluation-metrics :as eval-met]
-
-            ))
+    [breast-cancer-prediction-knn.data-transformation :as load-data]
+    [breast-cancer-prediction-knn.data-manipulation :as data-man]
+    [breast-cancer-prediction-knn.data-normalization :as data-norm]
+    [breast-cancer-prediction-knn.train-and-test-split :as tts]
+    [breast-cancer-prediction-knn.knn-model :as knn]
+    [breast-cancer-prediction-knn.evaluation-metrics :as eval-met]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -27,8 +24,7 @@
 
 ;(println cancer-data)
 (doseq [row (take 10 cancer-data)]
-  (println row)
-  )
+  (println row))
 
 (println "Dataset Information:")
 (println (data-man/dataset-info cancer-data))
@@ -44,7 +40,7 @@
 ;;;;;; DATA MANIPULATION
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;Id column is not needed for prediction
+
 (def cleaned-data (data-man/drop-column cancer-data "id"))
 
 (println "Cleaned data (column 'id' dropped):")
@@ -52,8 +48,7 @@
 
 (println "Cleaned data (column 'id' dropped) first 10 rows:")
 (doseq [row (take 10 cleaned-data)]
-  (println row)
-  )
+  (println row))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -65,8 +60,7 @@
 
 (println "Encoded Data:")
 (doseq [row (take 10 encoded-data)]
-  (println row)
-  )
+  (println row))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -77,8 +71,7 @@
 
 (println "Normalized data:")
 (doseq [row (take 10 normalized-data)]
-  (println row)
-  )
+  (println row))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -98,8 +91,10 @@
 
 (println transformed-test-data)
 
-;test data without final results
-(def transformed-test-data-without-class (tts/transform-data-without-class transformed-test-data))
+
+
+(def transformed-test-data-without-class
+  (tts/transform-data-without-class transformed-test-data))
 (println transformed-test-data-without-class)
 
 
@@ -109,7 +104,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def train-data transformed-train-data)
+
 (println train-data)
+
 (def test-data transformed-test-data-without-class)
 
 (doseq [cancer-patient test-data]
@@ -120,11 +117,9 @@
     (println "#################################")
     (println "Prediction:")
     (if (= predicted-class :M)
-      (println "Cancer type is Malignant.")
-      (println "Cancer type is Benign."))
-    (println "#################################")
-    )
-  )
+        (println "Cancer type is Malignant.")
+        (println "Cancer type is Benign."))
+    (println "#################################")))
 
 (def actual-data (map :cancer-type transformed-test-data))
 
@@ -132,7 +127,7 @@
 (println actual-data)
 
 (def predicted-data
-  (map #(knn/knn train-data (:attributes %) 3) test-data))
+ (map #(knn/knn train-data (:attributes %) 3) test-data))
 
 (println "Predicted data:")
 (println predicted-data)
@@ -141,7 +136,11 @@
 ;;;;;;; Evaluation of predicted and actual results
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def evaluation-metrics (eval-met/calculate-measures actual-data predicted-data)) (eval-met/calculate-measures actual-data predicted-data)
+(def evaluation-metrics
+  (eval-met/calculate-measures actual-data predicted-data))
+
+(eval-met/calculate-measures actual-data predicted-data)
+
 (println "#################################")
 (println "Evaluation metrics")
 (println "#################################")

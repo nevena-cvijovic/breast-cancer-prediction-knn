@@ -93,7 +93,7 @@ In the dataset there is an ID column that is not needed for prediction, so it mu
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;; DATA MANIPULATION
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;Id column is not needed for prediction
+
 (def cleaned-data
  (data-man/drop-column cancer-data "id"))
 
@@ -110,7 +110,7 @@ will be now encoded with values 1 and 0:
 ;;;;;; DIAGNOSIS CHANGE FROM M or B TO 1 or 0
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def encoded-data (data-man/encode-diagnosis cleaned-data)) ;; Encodes "diagnosis" column
+(def encoded-data (data-man/encode-diagnosis cleaned-data))
 
 (println "Encoded Data:")
 (doseq [row (take 10 encoded-data)]
@@ -140,31 +140,24 @@ You can see in __data_normalization.clj__ file how this formula is transformed i
 
 ```clojure
 (defn normalize-data
- "Normalizes the data (excluding header)."
- [data]
-
- (let [headers (data-man/get-headers data)
-       rows (rest data)
-       ;; Transpose rows to get columns
-       columns (apply map vector rows)
-
-
-       normalized-columns
-       (mapv
-         (fn [col]
-           (if (every? number? col) ;; Only if the column contains numeric values
-             (let [min-val (apply min col)
-                   max-val (apply max col)
-                   range (- max-val min-val)]
-               (mapv #(if (zero? range) 0.0
-                                        (/ (- % min-val) range))
-                     col))
-             col)) ;; If not numeric, leave the column unchanged
-         columns)
-       ;; Transpose normalized columns back into rows
-       normalized-rows (apply map vector normalized-columns)]
-   ;; Add headers back to the normalized data
-   (cons headers normalized-rows)))
+  "Normalizes the data (excluding header)."
+  [data]
+  (let [headers (data-man/get-headers data)
+        rows (rest data)
+        columns (apply map vector rows)
+        normalized-columns (mapv (fn [col]
+                                   (if (every? number? col)
+                                     (let [min-val (apply min col)
+                                           max-val (apply max col)
+                                           range (- max-val min-val)]
+                                       (mapv #(if (zero? range)
+                                                0.0
+                                                (/ (- % min-val) range))
+                                             col))
+                                     col))
+                                 columns)
+        normalized-rows (apply map vector normalized-columns)]
+    (cons headers normalized-rows)))
 
 ```
 
@@ -190,7 +183,6 @@ The *train-test-split* function is stored in __train_and_test_split.clj__ file, 
 (defn train-test-split
  "Splits dataset into test and train datasets"
  [data p]
-
  (let [n (count data)
        size (int (* n p))
        shuffled-data (shuffle data)]
@@ -210,7 +202,6 @@ we will transform the data from the train dataset and test dataset as follows:
 
 (println transformed-test-data)
 
-;test data without final results
 (def transformed-test-data-without-class (tts/transform-data-without-class transformed-test-data))
 (println transformed-test-data-without-class)
 ```
@@ -219,23 +210,21 @@ These two functions are also stored in __train_and_test_split.clj__ file:
 
 ```clojure
 (defn transform-data
- "Transforms dataset into a structured format - attributes and cancer type (diagnosis column of dataset)"
- [data]
-
- (mapv (fn [sample]
-         (let [attributes (map #(Double/parseDouble (str %)) (subvec sample 1 31))
-               cancer-type (if (= (nth sample 0) "1") :M :B)]
-           {:attributes attributes
-            :cancer-type cancer-type}))
-       data))
+  "Transforms dataset into a structured format - attributes and cancer type (diagnosis column of dataset)."
+  [data]
+  (mapv (fn [sample]
+          (let [attributes (map #(Double/parseDouble (str %)) (subvec sample 1 31))
+                cancer-type (if (= (nth sample 0) "1") :M :B)]
+            {:attributes attributes
+             :cancer-type cancer-type}))
+        data))
 
 (defn transform-data-without-class
- "Extracting only attributes from structured dataset"
- [data]
-
- (mapv (fn [sample]
-         {:attributes (map #(Double/parseDouble (str %)) (:attributes sample))})
-       data))
+  "Extracting only attributes from structured dataset."
+  [data]
+  (mapv (fn [sample]
+          {:attributes (map #(Double/parseDouble (str %)) (:attributes sample))})
+        data))
 ```
 
 Here we can see that cancer type class will have values __:M__ if the column diagnosis has value __1__ and __:B__ if column diagnosis has value __0__.
@@ -272,28 +261,24 @@ You can see these functions in __knn_model.clj__ file:
 
 ```clojure
 (defn euclidean-distance
- "Calculates the Euclidean distance between two vectors"
- [first-vector second-vector]
-
- (Math/sqrt (reduce + (map #(* % %) (map - first-vector second-vector)))))
+  "Calculates the Euclidean distance between two vectors."
+  [first-vector second-vector]
+  (Math/sqrt (reduce + (map #(* % %) (map - first-vector second-vector)))))
 
 (defn nearest-neighbors
- "Finds k nearest neighbours"
- [train-data new-data k]
+  "Finds k nearest neighbours."
+  [train-data new-data k]
+  (take k (sort-by :distance
+                   (map #(assoc % :distance (euclidean-distance (:attributes %) new-data)) train-data))))
 
- (take k
-       (sort-by :distance
-                (map #(assoc % :distance (euclidean-distance (:attributes %) new-data)) train-data))))
 
 (defn knn
- "KNN classification algorithm"
- [train-data new-data k]
-
- (let [nearest-neighbors (nearest-neighbors train-data new-data k)
-       classes (map :cancer-type nearest-neighbors)
-       frequencies (frequencies classes)]
-   ;; Sort the frequencies map by values (the counts) and get the class with the highest count
-   (key (first (sort-by (fn [[_ v]] v) > frequencies)))))
+  "KNN classification algorithm."
+  [train-data new-data k]
+  (let [nearest-neighbors (nearest-neighbors train-data new-data k)
+        classes (map :cancer-type nearest-neighbors)
+        frequencies (frequencies classes)]
+    (key (first (sort-by (fn [[_ v]] v) > frequencies)))))
 
 ```
 
@@ -322,7 +307,10 @@ we will use evaluation metrics that will calculate how much data is well predict
 ;;;;;;; Evaluation of predicted and actual results
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def evaluation-metrics (eval-met/calculate-measures actual-data predicted-data)) (eval-met/calculate-measures actual-data predicted-data)
+(def evaluation-metrics (eval-met/calculate-measures actual-data predicted-data)) 
+
+(eval-met/calculate-measures actual-data predicted-data)
+
 (println "#################################")
 (println "Evaluation metrics")
 (println "#################################")
@@ -337,33 +325,32 @@ Function calculate-measures is stored in __evaluation_metrics.clj__ file:
 
 ```clojure
 (defn true-positive
-  "Calculates how many Benign predicted diagnosis are also Benign actual diagnosis"
+  "Calculates how many Benign predicted diagnosis are also Benign actual diagnosis."
   [actual-values predicted-values]
-
-  (count (filter (fn [[actual predicted]] (and (= actual :B) (= predicted :B))) (map vector actual-values predicted-values))))
+  (count (filter (fn [[actual predicted]] (and (= actual :B) (= predicted :B)))
+                 (map vector actual-values predicted-values))))
 
 (defn true-negative
-  "Calculates how many Malignant predicted diagnosis are also Malignant actual diagnosis"
+  "Calculates how many Malignant predicted diagnosis are also Malignant actual diagnosis."
   [actual-values predicted-values]
-
-  (count (filter (fn [[actual predicted]] (and (= actual :M) (= predicted :M))) (map vector actual-values predicted-values))))
+  (count (filter (fn [[actual predicted]] (and (= actual :M) (= predicted :M)))
+                 (map vector actual-values predicted-values))))
 
 (defn false-positive
-  "Calculates how many Benign predicted diagnosis are Malignant actual diagnosis"
+  "Calculates how many Benign predicted diagnosis are Malignant actual diagnosis."
   [actual-values predicted-values]
-
-  (count (filter (fn [[actual predicted]] (and (= actual :M) (= predicted :B))) (map vector actual-values predicted-values))))
+  (count (filter (fn [[actual predicted]] (and (= actual :M) (= predicted :B)))
+                 (map vector actual-values predicted-values))))
 
 (defn false-negative
-  "Calculates how many Malignant predicted diagnosis are Benign actual diagnosis"
+  "Calculates how many Malignant predicted diagnosis are Benign actual diagnosis."
   [actual-values predicted-values]
-
-  (count (filter (fn [[actual predicted]] (and (= actual :B) (= predicted :M))) (map vector actual-values predicted-values))))
+  (count (filter (fn [[actual predicted]] (and (= actual :B) (= predicted :M)))
+                 (map vector actual-values predicted-values))))
 
 (defn calculate-measures
   "Calculates accuracy, precision, recall, and F1 score based on actual and predicted values."
   [actual predicted]
-
   (let [fp (false-positive actual predicted)
         tp (true-positive actual predicted)
         fn (false-negative actual predicted)
