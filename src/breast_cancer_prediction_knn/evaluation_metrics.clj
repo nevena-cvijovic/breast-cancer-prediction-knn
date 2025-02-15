@@ -7,10 +7,10 @@
   [actual-values predicted-values]
   (reduce (fn [confusion [actual predicted]]
             (cond
-              (and (= actual :B) (= predicted :B)) (update confusion :tp inc) ; True Positive
-              (and (= actual :M) (= predicted :M)) (update confusion :tn inc) ; True Negative
-              (and (= actual :M) (= predicted :B)) (update confusion :fp inc) ; False Positive
-              (and (= actual :B) (= predicted :M)) (update confusion :fn inc) ; False Negative
+              (and (= actual :B) (= predicted :B)) (update confusion :tp inc)
+              (and (= actual :M) (= predicted :M)) (update confusion :tn inc)
+              (and (= actual :M) (= predicted :B)) (update confusion :fp inc)
+              (and (= actual :B) (= predicted :M)) (update confusion :fn inc)
               :else confusion))
           {:tp 0 :tn 0 :fp 0 :fn 0}
           (map vector actual-values predicted-values)))
