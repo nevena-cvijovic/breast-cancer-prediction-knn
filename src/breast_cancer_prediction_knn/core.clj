@@ -139,7 +139,13 @@
 (def evaluation-metrics
   (eval-met/calculate-measures actual-data predicted-data))
 
-(eval-met/calculate-measures actual-data predicted-data)
+(println "#################################")
+(println "Confusion matrix")
+(println "#################################")
+
+(println (get evaluation-metrics :confusion-matrix) "\n")
+
+
 
 (println "#################################")
 (println "Evaluation metrics")
@@ -148,3 +154,72 @@
          "\nPrecision: " (get evaluation-metrics :precision)
          "\nRecall: " (get evaluation-metrics :recall)
          "\nF1: " (get evaluation-metrics :f1))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;; Measuring performances
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use 'criterium.core)
+
+
+(criterium.core/with-progress-reporting (criterium.core/quick-bench (data-norm/normalize-data encoded-data)))
+;Before improving performances
+;Evaluation count : 264 in 6 samples of 44 calls.
+;Execution time mean : 2.584228 ms
+;Execution time std-deviation : 236.601760 µs
+;Execution time lower quantile : 2.350471 ms ( 2.5%)
+;Execution time upper quantile : 2.850131 ms (97.5%)
+;Overhead used : 5.869545 ns
+
+;After improving performances
+;Evaluation count : 606 in 6 samples of 101 calls.
+;Execution time mean : 1.070664 ms
+;Execution time std-deviation : 72.381274 µs
+;Execution time lower quantile : 1.005936 ms ( 2.5%)
+;Execution time upper quantile : 1.181637 ms (97.5%)
+;Overhead used : 6.080843 ns
+
+(criterium.core/with-progress-reporting (criterium.core/quick-bench (tts/train-test-split (rest normalized-data) 0.7)))
+;Evaluation count : 11136 in 6 samples of 1856 calls.
+;Execution time mean : 52.068242 µs
+;Execution time std-deviation : 1.125579 µs
+;Execution time lower quantile : 50.281900 µs ( 2.5%)
+;Execution time upper quantile : 53.291787 µs (97.5%)
+;Overhead used : 5.869545 ns
+
+(criterium.core/with-progress-reporting (criterium.core/quick-bench (map #(knn/knn train-data (:attributes %) 3) test-data)))
+;Evaluation count : 49070064 in 6 samples of 8178344 calls.
+;Execution time mean : 7.861978 ns
+;Execution time std-deviation : 1.228778 ns
+;Execution time lower quantile : 6.530154 ns ( 2.5%)
+;Execution time upper quantile : 9.035747 ns (97.5%)
+;Overhead used : 5.869545 ns
+
+
+(criterium.core/with-progress-reporting (criterium.core/quick-bench (eval-met/calculate-measures actual-data predicted-data)))
+;Before improving performances
+;Evaluation count : 5532 in 6 samples of 922 calls.
+;Execution time mean : 116.319294 µs
+;Execution time std-deviation : 11.308627 µs
+;Execution time lower quantile : 103.671029 µs ( 2.5%)
+;Execution time upper quantile : 128.126995 µs (97.5%)
+;Overhead used : 5.869545 ns
+
+;After improving performances
+;Evaluation count : 21804 in 6 samples of 3634 calls.
+;Execution time mean : 28.734103 µs
+;Execution time std-deviation : 977.740527 ns
+;Execution time lower quantile : 27.663446 µs ( 2.5%)
+;Execution time upper quantile : 30.075530 µs (97.5%)
+;Overhead used : 6.202174 ns
+
+
+
+
+
+
+
+
+
