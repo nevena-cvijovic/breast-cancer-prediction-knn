@@ -139,21 +139,29 @@ This is done using the formula:
 You can see in __data_normalization.clj__ file how this formula is transformed in clojure function:
 
 ```clojure
+(defn min-max
+  [col]
+  (reduce (fn [[min-val max-val] x]
+            [(min min-val x) (max max-val x)])
+          [(first col) (first col)]
+          col))
+
+(defn normalize-column
+  [col min-val max-val]
+  (let [range (- max-val min-val)]
+    (mapv #(if (zero? range) 0.0 (/ (- % min-val) range)) col)))
+
+
 (defn normalize-data
-  "Normalizes the data (excluding header)."
+  "Normalizes the data - parallel processing."
   [data]
-  (let [headers (data-man/get-headers data)
+  (let [headers (first data)
         rows (rest data)
         columns (apply map vector rows)
-        normalized-columns (mapv (fn [col]
+        normalized-columns (pmap (fn [col]
                                    (if (every? number? col)
-                                     (let [min-val (apply min col)
-                                           max-val (apply max col)
-                                           range (- max-val min-val)]
-                                       (mapv #(if (zero? range)
-                                                0.0
-                                                (/ (- % min-val) range))
-                                             col))
+                                     (let [[min-val max-val] (min-max col)]
+                                       (normalize-column col min-val max-val))
                                      col))
                                  columns)
         normalized-rows (apply map vector normalized-columns)]
@@ -324,45 +332,36 @@ we will use evaluation metrics that will calculate how much data is well predict
 Function calculate-measures is stored in __evaluation_metrics.clj__ file:
 
 ```clojure
-(defn true-positive
-  "Calculates how many Benign predicted diagnosis are also Benign actual diagnosis."
+(defn build-confusion-matrix
+  "Builds a confusion matrix from actual and predicted values.
+   The confusion matrix is represented as a map with keys :tp, :tn, :fp, :fn."
   [actual-values predicted-values]
-  (count (filter (fn [[actual predicted]] (and (= actual :B) (= predicted :B)))
-                 (map vector actual-values predicted-values))))
-
-(defn true-negative
-  "Calculates how many Malignant predicted diagnosis are also Malignant actual diagnosis."
-  [actual-values predicted-values]
-  (count (filter (fn [[actual predicted]] (and (= actual :M) (= predicted :M)))
-                 (map vector actual-values predicted-values))))
-
-(defn false-positive
-  "Calculates how many Benign predicted diagnosis are Malignant actual diagnosis."
-  [actual-values predicted-values]
-  (count (filter (fn [[actual predicted]] (and (= actual :M) (= predicted :B)))
-                 (map vector actual-values predicted-values))))
-
-(defn false-negative
-  "Calculates how many Malignant predicted diagnosis are Benign actual diagnosis."
-  [actual-values predicted-values]
-  (count (filter (fn [[actual predicted]] (and (= actual :B) (= predicted :M)))
-                 (map vector actual-values predicted-values))))
+  (reduce (fn [confusion [actual predicted]]
+            (cond
+              (and (= actual :B) (= predicted :B)) (update confusion :tp inc)
+              (and (= actual :M) (= predicted :M)) (update confusion :tn inc)
+              (and (= actual :M) (= predicted :B)) (update confusion :fp inc)
+              (and (= actual :B) (= predicted :M)) (update confusion :fn inc)
+              :else confusion))
+          {:tp 0 :tn 0 :fp 0 :fn 0}
+          (map vector actual-values predicted-values)))
 
 (defn calculate-measures
-  "Calculates accuracy, precision, recall, and F1 score based on actual and predicted values."
+  "Calculates accuracy, precision, recall, and F1 score based on the confusion matrix."
   [actual predicted]
-  (let [fp (false-positive actual predicted)
-        tp (true-positive actual predicted)
-        fn (false-negative actual predicted)
-        tn (true-negative actual predicted)]
-    (let [accuracy (double (/ (+ tp tn) (+ tp tn fp fn)))
-          precision (double (if (zero? (+ tp fp)) 0 (/ tp (+ tp fp))))
-          recall (double (if (zero? (+ tp fn)) 0 (/ tp (+ tp fn))))
-          f1 (double (* 2 (/ (* precision recall) (+ precision recall))))]
-      {:accuracy accuracy
-       :precision precision
-       :recall recall
-       :f1 f1})))
+  (let [{:keys [tp tn fp fn]} (build-confusion-matrix actual predicted)
+        accuracy (double (/ (+ tp tn) (+ tp tn fp fn)))
+        precision (double (if (zero? (+ tp fp)) 0 (/ tp (+ tp fp))))
+        recall (double (if (zero? (+ tp fn)) 0 (/ tp (+ tp fn))))
+        f1 (double (if (zero? (+ precision recall)) 0 (* 2 (/ (* precision recall) (+ precision recall)))))]
+    {:accuracy accuracy
+     :precision precision
+     :recall recall
+     :f1 f1
+     :confusion-matrix {:true-positive tp
+                        :true-negative tn
+                        :false-positive fp
+                        :false-negative fn}}))
 ```
 
 In this call of function we had the following results:
